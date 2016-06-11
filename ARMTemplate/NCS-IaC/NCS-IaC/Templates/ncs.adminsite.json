@@ -1,0 +1,88 @@
+﻿{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": { "type": "string" },
+        "region": { "type": "string" },
+        "serverFarmName": { "type": "string" },
+        "DBMaxRetryCount": { "type": "string" },
+        "DBMaxRetryDelaySecs": { "type": "string" },
+        "sawaURL": { "type": "string" },
+        "sawsURL": { "type": "string" },
+        "appInsightKey": { "type": "string" }
+    },
+    "variables": {
+        "websitename": "[concat(parameters('environment'),'-ncs-web-',parameters('region'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-08-01",
+            "name": "[variables('websitename')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('region')]",
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('serverFarmName'))]": "Resource",
+                "displayName": "adminWebSite"
+            },
+            "properties": {
+                "name": "[variables('websitename')]",
+                "serverFarmId": "[parameters('serverFarmName')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "type": "config",
+                    "name": "web",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/Sites/', variables('websitename'))]"
+                    ],
+                    "properties": {
+                        "NetFrameworkVersion": "v4.0",
+                        "phpVersion": "",
+                        "use32BitWorkerProcess": true,
+                        "alwaysOn": true
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "type": "config",
+                    "name": "appsettings",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/Sites/', variables('websitename'))]"
+                    ],
+                    "properties": {
+                        "DBMaxRetryCount": "[parameters('DBMaxRetryCount')]",
+                        "DBMaxRetryDelaySecs": "[parameters('DBMaxRetryDelaySecs')]",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightKey')]"
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "logs",
+                    "type": "config",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/Sites/', variables('websitename'))]"
+                    ],
+                    "properties": {
+                        "applicationLogs": {
+                            "azureBlobStorage": {
+                                "Level": "Verbose",
+                                "sasUrl": "[parameters('sawaURL')]",
+                                "retentionInDays": 14
+                            }
+                        },
+                        "httplogs": {
+                            "azureBlobStorage": {
+                                "enabled": "true",
+                                "sasUrl": "[parameters('sawsURL')]",
+                                "retentionInDays": 28
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}

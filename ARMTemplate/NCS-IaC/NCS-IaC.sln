@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "NCS-IaC", "NCS-IaC\NCS-IaC.deployproj", "{BE1EEC3A-8692-4FAB-9FA1-2681340FD08A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE1EEC3A-8692-4FAB-9FA1-2681340FD08A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE1EEC3A-8692-4FAB-9FA1-2681340FD08A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE1EEC3A-8692-4FAB-9FA1-2681340FD08A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE1EEC3A-8692-4FAB-9FA1-2681340FD08A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

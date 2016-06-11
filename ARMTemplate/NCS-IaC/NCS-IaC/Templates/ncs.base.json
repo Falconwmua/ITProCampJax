@@ -1,0 +1,299 @@
+﻿{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environment": { "type": "string" },
+        "region1": { "type": "string" },
+        "region2": { "type": "string" },
+        "DBMaxRetryCount": { "type": "string" },
+        "DBMaxRetryDelaySecs": { "type": "string" },
+        "saregion1waURL": { "type": "string" },
+        "saregion1wsURL": { "type": "string" },
+        "saregion2waURL": { "type": "string" },
+        "saregion2wsURL": { "type": "string" },
+        "appInsightFW1Key": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "appInsightFW2Key": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "appInsightAW1Key": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "appInsightAW2Key": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "S1",
+            "allowedValues": [
+                "F1",
+                "D1",
+                "B1",
+                "B2",
+                "B3",
+                "S1",
+                "S2",
+                "S3",
+                "P1",
+                "P2",
+                "P3",
+                "P4"
+            ],
+            "metadata": {
+                "description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "metadata": {
+                "description": "Describes plan's instance count"
+            }
+        }
+    },
+    "variables": {
+        "serverfarmTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.serverfarm.json')]",
+        "mobileserviceTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.mobileservice.json')]",
+        "adminsiteTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.adminsite.json')]",
+        "trafficmanagerTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.trafficmanager.json')]",
+        "serverfarminsightsTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.serverfarminsights.json')]",
+        "adminsiteinsightsTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.adminsiteinsights.json')]",
+        "mobileserviceinsightsTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'ncs.mobileserviceinsights.json')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "ServerFarm1",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [ ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('serverfarmTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region1')]" },
+                    "skuName": { "value": "[parameters('skuName')]" },
+                    "skuCapacity": { "value": "[parameters('skuCapacity')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "ServerFarm2",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [ ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('serverfarmTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region2')]" },
+                    "skuName": { "value": "[parameters('skuName')]" },
+                    "skuCapacity": { "value": "[parameters('skuCapacity')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "ServerFarmInsights1",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm1"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('serverfarminsightsTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "hostingPlanName": { "value": "[ concat(parameters('environment'), '-ncs-sf-', parameters('region1')) ]" },
+                    "location": { "value": "[parameters('region1')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "ServerFarmInsights2",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm2"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('serverfarminsightsTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "hostingPlanName": { "value": "[ concat(parameters('environment'), '-ncs-sf-', parameters('region2')) ]" },
+                    "location": { "value": "[parameters('region2')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "AdminWebSite1",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm1"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('adminsiteTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region1')]" },
+                    "serverFarmName": { "value": "[concat(parameters('environment'), '-ncs-sf-', parameters('region1'))]" },
+                    "DBMaxRetryCount": { "value": "[parameters('DBMaxRetryCount')]" },
+                    "DBMaxRetryDelaySecs": { "value": "[parameters('DBMaxRetryDelaySecs')]" },
+                    "sawaURL": { "value": "[parameters('saregion1waURL')]" },
+                    "sawsURL": { "value": "[parameters('saregion1wsURL')]" },
+                    "appInsightKey": { "value": "[parameters('appInsightFW1Key')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "AdminWebSite2",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm2"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('adminsiteTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region2')]" },
+                    "serverFarmName": {
+                        "value": "[concat(parameters('environment'), '-ncs-sf-', parameters('region2'))]"
+                    },
+                    "DBMaxRetryCount": { "value": "[parameters('DBMaxRetryCount')]" },
+                    "DBMaxRetryDelaySecs": { "value": "[parameters('DBMaxRetryDelaySecs')]" },
+                    "sawaURL": { "value": "[parameters('saregion2waURL')]" },
+                    "sawsURL": { "value": "[parameters('saregion2wsURL')]" },
+                    "appInsightKey": { "value": "[parameters('appInsightFW2Key')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "MobileService1",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm1"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('mobileserviceTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region1')]" },
+                    "serverFarmName": {
+                        "value": "[concat(parameters('environment'), '-ncs-sf-', parameters('region1'))]"
+                    },
+                    "DBMaxRetryCount": { "value": "[parameters('DBMaxRetryCount')]" },
+                    "DBMaxRetryDelaySecs": { "value": "[parameters('DBMaxRetryDelaySecs')]" },
+                    "sawaURL": { "value": "[parameters('saregion1waURL')]" },
+                    "sawsURL": { "value": "[parameters('saregion1wsURL')]" },
+                    "appInsightKey": { "value": "[parameters('appInsightFW1Key')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "MobileService2",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/ServerFarm1"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('mobileserviceTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "environment": { "value": "[parameters('environment')]" },
+                    "region": { "value": "[parameters('region2')]" },
+                    "serverFarmName": {
+                        "value": "[concat(parameters('environment'), '-ncs-sf-', parameters('region2'))]"
+                    },
+                    "DBMaxRetryCount": { "value": "[parameters('DBMaxRetryCount')]" },
+                    "DBMaxRetryDelaySecs": { "value": "[parameters('DBMaxRetryDelaySecs')]" },
+                    "sawaURL": { "value": "[parameters('saregion2waURL')]" },
+                    "sawsURL": { "value": "[parameters('saregion2wsURL')]" },
+                    "appInsightKey": { "value": "[parameters('appInsightFW2Key')]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "AdminWebSiteTrafficManager",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/AdminWebSite1",
+                "Microsoft.Resources/deployments/AdminWebSite2"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('trafficmanagerTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "trafficManagerName": { "value": "[ concat(parameters('environment'), '-ncs-web' ]" },
+                    "monitorPath": { "value": "/home" },
+                    "endPoint1": { "value": "[concat(parameters('environment'),'-ncs-web-',parameters('region1'))]" },
+                    "endPoint2": { "value": "[concat(parameters('environment'),'-ncs-web-',parameters('region2'))]" }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "MobileServiceTrafficManager",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "Microsoft.Resources/deployments/MobileService1",
+                "Microsoft.Resources/deployments/MobileService2"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('trafficmanagerTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "trafficManagerName": { "value": "[ concat(parameters('environment'), '-ncs-ms' ]" },
+                    "monitorPath": { "value": "/home" },
+                    "endPoint1": { "value": "[concat(parameters('environment'),'-ncs-ms-',parameters('region1'))]" },
+                    "endPoint2": { "value": "[concat(parameters('environment'),'-ncs-ms-',parameters('region2'))]" }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

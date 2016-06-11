@@ -1,0 +1,57 @@
+﻿{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "trafficManagerName": { "type": "string" },
+        "monitorPath": { "type": "string" },
+        "endPoint1": { "type": "string" },
+        "endPoint2": { "type": "string" }
+    },
+    "variables": {
+        "tmApiVersion": "2015-11-01",
+        "apiVersion": "2015-08-01"
+    },
+    "resources": [
+        {
+            "apiVersion": "[variables('tmApiVersion')]",
+            "type": "Microsoft.Network/trafficManagerProfiles",
+            "name": "[parameters('trafficManagerName')]",
+            "location": "global",
+            "properties": {
+                "profileStatus": "Enabled",
+                "trafficRoutingMethod": "Performance",
+                "dnsConfig": {
+                    "relativeName": "[parameters('trafficManagerName')]",
+                    "ttl": 30
+                },
+                "monitorConfig": {
+                    "protocol": "HTTPS",
+                    "port": 443,
+                    "path": "[parameters('monitorPath')]"
+                },
+                "endpoints": [
+                    {
+                        "name": "[parameters('endPoint1')]",
+                        "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+                        "properties": {
+                            "targetResourceId": "[resourceId('Microsoft.Web/sites/',parameters('endPoint1'))]",
+                            "endpointStatus": "Enabled",
+                            "priority": 1
+                        }
+                    },
+                    {
+                        "name": "[parameters('endPoint2')]",
+                        "type": "Microsoft.Network/trafficManagerProfiles/azureEndpoints",
+                        "properties": {
+                            "targetResourceId": "[resourceId('Microsoft.Web/sites/',parameters('endPoint2'))]",
+                            "endpointStatus": "Enabled",
+                            "priority": 2
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+            "outputs": {
+            }
+        }
