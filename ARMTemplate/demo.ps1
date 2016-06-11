@@ -10,11 +10,11 @@ Login-AzureRmAccount -Credential $Azurecred
 
 Get-AzureRmSubscription -SubscriptionId $subscriptionid | Select-AzureRmSubscription
 
-$resourcegroupname = 'PoshSatTampa01'
+$resourcegroupname = 'ITProCampJax'
 $location = 'eastus'
-$sitename = 'PoshSatTampaD4A01'
-$hostingplan = 'PSTD4A01'
-$sqlServerName = 'poshsattampa01'
+$sitename = 'ITProCampJaxD4A01'
+$hostingplan = 'ITPC4A01'
+$sqlServerName = 'ITProCampJax'
 $sqlAdministratorLogin = 'AdminWill'
 $sqlAdministratorPassword = ConvertTo-SecureString -String "P@ssw0rd" -AsPlainText -Force
 $repoUrl = "https://github.com/ProjectNami/projectnami"

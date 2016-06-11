@@ -5,9 +5,9 @@ Import-Module AzureRM.Resources
 
 $subscriptionName = "WWM-MSDN"
 
-$OPSRGName = 'PoshSatTampa-OPS'
-$WEBRGName = 'PoshSatTampa01'
-$sitename = $("PoshSatTampa01").tolower()
+$OPSRGName = 'ITProCampJax-OPS'
+$WEBRGName = 'ITProCampJax01'
+$sitename = $("ITProCampJax01").tolower()
 
 $StorPropObject = @{
     accountType = "Standard-LRS"
@@ -68,7 +68,7 @@ $location = $(Find-AzureRmResource -ResourceType microsoft.web/sites -ResourceGr
             };
         }
            
-   Set-AzureRmResource -Properties $PropertiesObject -ResourceGroupName $WEBRGName -ResourceType Microsoft.Web/sites/config -ResourceName "PoshSatTampaD4A01/logs" -ApiVersion 2015-08-01 -Force
+   Set-AzureRmResource -Properties $PropertiesObject -ResourceGroupName $WEBRGName -ResourceType Microsoft.Web/sites/config -ResourceName "ITProCampJaxD4A01/logs" -ApiVersion 2015-08-01 -Force
 
 
 
