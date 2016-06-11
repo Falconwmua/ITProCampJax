@@ -11,10 +11,10 @@ Login-AzureRmAccount -Credential $Azurecred
 Get-AzureRmSubscription -SubscriptionId $subscriptionid | Select-AzureRmSubscription
 
 $resourcegroupname = 'ITProCampJax'
-$location = 'eastus'
-$sitename = 'ITProCampJaxD4A01'
+$location = 'eastus2'
+$sitename = 'itprocampjaxd4a01'
 $hostingplan = 'ITPC4A01'
-$sqlServerName = 'ITProCampJax'
+$sqlServerName = 'itprocampjax'
 $sqlAdministratorLogin = 'AdminWill'
 $sqlAdministratorPassword = ConvertTo-SecureString -String "P@ssw0rd" -AsPlainText -Force
 $repoUrl = "https://github.com/ProjectNami/projectnami"
@@ -26,5 +26,5 @@ if ( -not $( Get-AzureRMResourceGroup -Name $resourcegroupname -ErrorAction Sile
     New-AzureRMResourceGroup -Name $resourcegroupname -Location $location 
 }
 
-New-AzureRMResourceGroupDeployment -ResourceGroupName $resourcegroupname -Name DeploySat -TemplateFile D:\PoshTampa\ARMTemplate\azure_NAMIv2_deploy.json  -siteName $sitename -hostingPlanName $hostingplan -siteLocation $location -sqlServerName $sqlServerName -sqlAdministratorLogin $sqlAdministratorLogin -sqlAdministratorPassword $sqlAdministratorPassword -repoUrl $repoUrl -branch $branch -verbose -sku Standard
+get0
 
