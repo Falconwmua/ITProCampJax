@@ -11,7 +11,7 @@ Login-AzureRmAccount -Credential $Azurecred
 Get-AzureRmSubscription -SubscriptionId $subscriptionid | Select-AzureRmSubscription
 
 $resourcegroupname = 'ITProCampJax'
-$location = 'eastus2'
+$location = 'westus2'
 $sitename = 'itprocampjaxd4a01'
 $hostingplan = 'ITPC4A01'
 $sqlServerName = 'itprocampjax'
@@ -26,5 +26,4 @@ if ( -not $( Get-AzureRMResourceGroup -Name $resourcegroupname -ErrorAction Sile
     New-AzureRMResourceGroup -Name $resourcegroupname -Location $location 
 }
 
-get0
-
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourcegroupname -Name AzureUG -TemplateFile .\ARMTemplate\azure_NAMI_deploy.json -siteName $sitename -siteLocation $location -hostingPlanName $hostingplan -sqlServerName $sqlServerName -sqlAdministratorPassword $sqlAdministratorPassword -sqlAdministratorLogin $sqlAdministratorLogin -branch $branch -repoUrl $repoUrl -sku "Free" -Verbose
