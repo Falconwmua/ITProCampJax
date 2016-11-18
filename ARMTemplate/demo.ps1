@@ -26,4 +26,6 @@ if ( -not $( Get-AzureRMResourceGroup -Name $resourcegroupname -ErrorAction Sile
     New-AzureRMResourceGroup -Name $resourcegroupname -Location $location 
 }
 
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourcegroupname -Name AzureUG -TemplateFile .\ARMTemplate\azure_NAMI_deploy.json -siteName $sitename -siteLocation $location -hostingPlanName $hostingplan -sqlServerName $sqlServerName -sqlAdministratorPassword $sqlAdministratorPassword -sqlAdministratorLogin $sqlAdministratorLogin -branch $branch -repoUrl $repoUrl -sku "Free" -Verbose
+$startdate = get-date
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourcegroupname -Name ATLTS2016 -TemplateFile .\ARMTemplate\azure_NAMI_deploy.json -siteName $sitename -siteLocation $location -hostingPlanName $hostingplan -sqlServerName $sqlServerName -sqlAdministratorPassword $sqlAdministratorPassword -sqlAdministratorLogin $sqlAdministratorLogin -branch $branch -repoUrl $repoUrl -Verbose
+$startdate - $(get-date)
