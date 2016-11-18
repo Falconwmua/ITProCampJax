@@ -12,9 +12,9 @@ Get-AzureRmSubscription -SubscriptionId $subscriptionid | Select-AzureRmSubscrip
 
 $resourcegroupname = 'ATLTS2016'
 $location = 'westus2'
-$sitename = 'atlts2016ab'
-$hostingplan = 'atlts2016abhp'
-$sqlServerName = 'atlts2016absql'
+$sitename = 'atlts2016'
+$hostingplan = 'atlts2016hp'
+$sqlServerName = 'atlts2016sql'
 $sqlAdministratorLogin = 'AdminWill'
 $sqlAdministratorPassword = ConvertTo-SecureString -String "P@ssw0rd" -AsPlainText -Force
 $repoUrl = "https://github.com/ProjectNami/projectnami"
