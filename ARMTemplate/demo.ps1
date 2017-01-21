@@ -10,11 +10,11 @@ Login-AzureRmAccount -Credential $Azurecred
 
 Get-AzureRmSubscription -SubscriptionId $subscriptionid | Select-AzureRmSubscription
 
-$resourcegroupname = 'ATLTS2016'
+$resourcegroupname = 'CloudSatAtl2017'
 $location = 'westus2'
-$sitename = 'atlts2016'
-$hostingplan = 'atlts2016hp'
-$sqlServerName = 'atlts2016sql'
+$sitename = 'cloudsatatl2017'
+$hostingplan = 'csatl2017hp'
+$sqlServerName = 'csatl2017sql'
 $sqlAdministratorLogin = 'AdminWill'
 $sqlAdministratorPassword = ConvertTo-SecureString -String "P@ssw0rd" -AsPlainText -Force
 $repoUrl = "https://github.com/ProjectNami/projectnami"
